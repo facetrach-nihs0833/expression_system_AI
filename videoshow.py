@@ -4,12 +4,12 @@ import cv2
 import torch
 from torchvision import transforms
 import torch.nn as nn
-
+from pysound import playy
 import haarcascade_detect
 import numpy as np
 import argparse
 import torch.nn.functional as F
-
+import time
 
 
 cfg = {
@@ -105,7 +105,7 @@ transform_test = transforms.Compose([
 #          mean=(0.5, 0.5, 0.5),
 #          std=(0.5, 0.5, 0.5)
 #      )])
-
+Tstart=time.time()
 def detect():
 
     # original_image = cv2.imread(image_path)
@@ -189,8 +189,9 @@ def detect():
                 # inputs = inputs.to(device)
                 outputs = model(inputs)
                 outputs = outputs.view(ncrops, -1).mean(0)
-                print(outputs)
+                #print(outputs)
                 _, predicted = torch.max(outputs, 0)
+                print(predicted)
                 expression = classes[int(predicted.cpu().numpy())]
 
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 2)
@@ -198,7 +199,25 @@ def detect():
                 text = "{}".format(expression)
 
                 cv2.putText(frame, text, (x, y - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5,(255, 0, 0), 2)
-
+                Tend=time.time()
+                thetime=round(Tend-Tstart)
+                if thetime % 6 == 0:
+                    if expression=="Angry":
+                        ps=playy("sound/angry.mp3")
+                    if expression=="Disgust":
+                        ps=playy("sound/disgust.mp3")    
+                    if expression=="Fear":
+                        ps=playy("sound/fear.mp3")
+                    if expression=="Happy":
+                        ps=playy("sound/happy.mp3")
+                    if expression=="Neutral":
+                        ps=playy("sound/neutral.mp3")    
+                    if expression=="Sad":
+                        ps=playy("sound/sad.mp3")    
+                    if expression=="Surprise":
+                        ps=playy("sound/surprise.mp3")
+                    ps.start()
+                    time.sleep(3)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
