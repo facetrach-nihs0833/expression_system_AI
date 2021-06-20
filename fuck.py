@@ -21,7 +21,7 @@ with yaspin(text="LOAD image", color="cyan") as sp:
             images.append(files[i]+"/"+file[j]+" "+str(i)+"\n")
             labels.append(i)
 
-            if j >=10000:
+            if j >=15000:
                 break
 
     f.writelines(images)

@@ -82,7 +82,7 @@ cv2.useOptimized()
 video_capture = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 anterior = 0
 
-classes = ('Angry', 'Disgust', 'Fear', 'Happy', 'Sad', 'Surprise', 'Neutral')
+classes = ('Angry', 'Disgust', 'Fear', 'Happy', 'Neutral','Sad', 'Surprise')
 crop_size= 48
 #Load model
 trained_model = torch.load(args.trained_model)
