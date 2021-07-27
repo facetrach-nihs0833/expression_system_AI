@@ -90,8 +90,8 @@ class TorchDataset(Dataset):
 
 
 
-train_data = TorchDataset(filename="output.txt", image_dir="train",repeat=1)
-test_data = TorchDataset(filename="outputtest.txt", image_dir="test",repeat=1)
+train_data = TorchDataset(filename="output.txt", image_dir="fer2013",resize_height=64,resize_width=64)
+test_data = TorchDataset(filename="outputtest.txt", image_dir="test")
 train_loader = DataLoader(dataset=train_data, batch_size=64, shuffle=True)
 test_loader = DataLoader(dataset=test_data, batch_size=64)
 
@@ -132,7 +132,7 @@ class VGG(nn.Module):
         layers += [nn.AvgPool2d(kernel_size=1, stride=1)]
         return nn.Sequential(*layers)
 
-net=VGG("VGG19")
+net=VGG("VGG11")
 print(net)
 
 
@@ -144,18 +144,22 @@ if(use_gpu):
     net = net.cuda()
     loss_func = loss_func.cuda()
 
-def save_checkpoint(epoch, model, optimizer):
+def save_checkpoint(epoch, model, optimizer,loss):
     '''
         Save model checkpoint
     '''
     state = {'epoch': epoch, "model_weights": model, "optimizer": optimizer}
-    filename = f"model_state.pth{epoch}.tar"
+    try:
+        os.remove("model_state.pth.tar")
+    except:
+        print("no")
+    filename = f"model_state.pth.tar"
     torch.save(state, filename)
 
 
 #-------------------------start-------------------------------
-
-for epoch in range(2):
+outputloss=1
+for epoch in range(20):
     print(f"now epoch{epoch}")
     train_loss=0.0
     train_acc=0.0
@@ -164,6 +168,8 @@ for epoch in range(2):
         x, y = Variable(x), Variable(y) 
         if (use_gpu):
             x,y = x.cuda(),y.cuda()
+
+        print(x.shape)
         
 
 
@@ -196,4 +202,6 @@ for epoch in range(2):
     print('Test Loss: {:.6f}, Acc: {:.6f}'.format(eval_loss / (len(
         test_data)), eval_acc / (len(test_data))))
     best_model_wts=net.state_dict()
-    save_checkpoint(epoch, best_model_wts, optimizer)
+    if eval_loss / (len(test_data)) <= outputloss:
+        outputloss=eval_loss / (len(test_data))
+        save_checkpoint(epoch, best_model_wts, optimizer,outputloss)

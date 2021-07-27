@@ -1,4 +1,3 @@
-
 # -*-coding: utf-8 -*-
 
 import torch
@@ -18,7 +17,7 @@ class TorchDataset(Dataset):
         self.repeat = repeat
         self.resize_height = resize_height
         self.resize_width = resize_width
- 
+        self.testtotensor =  transforms.Compose([transforms.ToTensor(),transforms.Resize((32,32))])
 
 
         self.toTensor = transforms.ToTensor()

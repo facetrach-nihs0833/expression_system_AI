@@ -88,7 +88,7 @@ image_path = args.input
 trained_model = torch.load(args.trained_model)
 print("Load weight model with {} epoch".format(trained_model["epoch"]))
 
-model = VGG("VGG19")
+model = VGG("VGG11")
 model.load_state_dict(trained_model["model_weights"])
 model.to(device)
 model.eval()
